@@ -7,28 +7,41 @@ module.exports.getAllTasks = (req, res, next) => {
 };
 
 module.exports.createNewTask = (req, res, next) => {
-  const task = new Task(req.body);
-  task.save().then((result) => {
-    res.send('Task created');
-  });
+  if (req.body.hasOwnProperty('text') || req.body.hasOwnProperty('isCheck')) {
+    const task = new Task(req.body);
+    task
+      .save()
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => console.log(err));
+  } else {
+    res.status(404).send('Somthing wrong');
+  }
 };
 
 module.exports.deleteTask = (req, res, next) => {
-  Task.deleteOne({ _id: req.query.id })
-    .then((result) => {
-      Task.find().then((result) => {
-        res.send(result);
-      });
-    })
-    .catch((err) => console.log(err));
+  if (req.query.id) {
+    Task.deleteOne({ _id: req.query.id })
+      .then((result) => {
+        Task.find().then((result) => {
+          res.send(result);
+        });
+      })
+      .catch((err) => console.log(err));
+  } else {
+    res.status(404).send('Somthing wrong');
+  }
 };
 
 module.exports.changeTaskInfo = (req, res, next) => {
-  Task.findById(req.query.id)
-    .updateOne(req.body)
-    .then((result) => {
+  if (req.body.hasOwnProperty('text') || req.body.hasOwnProperty('isCheck')) {
+    Task.updateOne({ _id: req.query.id }, req.body).then((result) => {
       Task.find().then((result) => {
         res.send({ data: result });
       });
     });
+  } else {
+    res.status(404).send('Somthing wrong');
+  }
 };
