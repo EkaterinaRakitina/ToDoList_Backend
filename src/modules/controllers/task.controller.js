@@ -7,7 +7,7 @@ module.exports.getAllTasks = (req, res, next) => {
 };
 
 module.exports.createNewTask = (req, res, next) => {
-  if (req.body.hasOwnProperty('text') || req.body.hasOwnProperty('isCheck')) {
+  if (req.body.hasOwnProperty('text') && req.body.hasOwnProperty('isCheck')) {
     const task = new Task(req.body);
     task
       .save()
@@ -35,7 +35,7 @@ module.exports.deleteTask = (req, res, next) => {
 };
 
 module.exports.changeTaskInfo = (req, res, next) => {
-  if (req.body.hasOwnProperty('text') || req.body.hasOwnProperty('isCheck')) {
+  if (req.query.hasOwnProperty('id') && (req.body.hasOwnProperty('text') || req.body.hasOwnProperty('isCheck'))) {
     Task.updateOne({ _id: req.query.id }, req.body).then((result) => {
       Task.find().then((result) => {
         res.send({ data: result });
